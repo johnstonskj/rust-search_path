@@ -178,7 +178,7 @@ impl SearchPath {
     /// If the environment variable is not present, or could not be read this function returns
     /// an error.
     ///
-    /// ```rust
+    /// ```rust,should_panic
     /// use search_path::SearchPath;
     ///
     /// let search_path = SearchPath::new("CMD_PATH").expect("No $CMD_PATH present");
