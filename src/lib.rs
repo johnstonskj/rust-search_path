@@ -233,10 +233,17 @@ impl SearchPath {
 
     // --------------------------------------------------------------------------------------------
 
+    ///
+    /// Return the first file system entity, either file or directory, found in the search path, or
+    /// `None`.
+    ///
     pub fn find(&self, file_name: &Path) -> Option<PathBuf> {
         self.find_something(file_name, FindKind::Any)
     }
 
+    ///
+    /// Return all the file system entities, either file or directory, found in the search path.
+    ///
     pub fn find_all(&self, file_name: &Path) -> Vec<PathBuf> {
         let mut results: Vec<PathBuf> = Default::default();
         for path in &self.paths {
@@ -249,12 +256,31 @@ impl SearchPath {
         results
     }
 
+    ///
+    /// Return the first file found in the search path, or `None`.
+    ///
     pub fn find_file(&self, file_name: &Path) -> Option<PathBuf> {
         self.find_something(file_name, FindKind::File)
     }
 
+    ///
+    /// Return the first directory found in the search path, or `None`.
+    ///
     pub fn find_directory(&self, file_name: &Path) -> Option<PathBuf> {
         self.find_something(file_name, FindKind::Directory)
+    }
+
+    ///
+    /// Return the first file found in the search path, or `None`. This method will only
+    /// consider `file_name` if it is not a path, if it has any path components the method
+    /// will also return `None`.
+    ///
+    pub fn find_if_name_only(&self, file_name: &Path) -> Option<PathBuf> {
+        if let Some(_) = file_name.parent() {
+            self.find(file_name)
+        } else {
+            None
+        }
     }
 
     fn find_something(&self, file_name: &Path, kind: FindKind) -> Option<PathBuf> {
@@ -271,53 +297,78 @@ impl SearchPath {
         None
     }
 
-    pub fn find_if_name_only(&self, file_name: &Path) -> Option<PathBuf> {
-        if let Some(_) = file_name.parent() {
-            self.find(file_name)
-        } else {
-            None
-        }
-    }
-
     // --------------------------------------------------------------------------------------------
 
+    ///
+    /// Return `true` if this instance has no paths to search, else `false`.
+    ///
     pub fn is_empty(&self) -> bool {
         self.paths.is_empty()
     }
 
+    ///
+    /// Return the current number of paths in the list of paths to search.
+    ///
     pub fn len(&self) -> usize {
         self.paths.len()
     }
+
+    ///
+    /// Return `true` if the list of paths to search contains the `path` value, else `false`.
+    ///
     pub fn contains(&self, path: &PathBuf) -> bool {
         self.paths.contains(path)
     }
 
+    ///
+    /// Return `true` if the list of paths to search contains the current directory path, `"."`,
+    /// value, else `false`.
+    ///
     pub fn contains_cwd(&self) -> bool {
         self.contains(&PathBuf::from(CURRENT_DIR_PATH))
     }
 
+    ///
+    /// Return an iterator over all the paths in the list of paths to search.
+    ///
     pub fn iter(&self) -> impl Iterator<Item = &PathBuf> {
         self.paths.iter()
     }
 
     // --------------------------------------------------------------------------------------------
 
+    ///
+    /// Append the provided `path` to the list of paths to search.
+    ///
     pub fn append(&mut self, path: PathBuf) {
         self.paths.push(path)
     }
 
+    ///
+    /// Append the current directory path, `"."`, to the list of paths to search.
+    ///
     pub fn append_cwd(&mut self) {
         self.append(PathBuf::from(CURRENT_DIR_PATH))
     }
 
+    ///
+    /// Prepend the provided `path` to the list of paths to search.
+    ///
     pub fn prepend(&mut self, path: PathBuf) {
         self.paths.insert(0, path)
     }
 
+    ///
+    /// Prepend the current directory path, `"."`, to the list of paths to search.
+    ///
     pub fn prepend_cwd(&mut self) {
         self.prepend(PathBuf::from(CURRENT_DIR_PATH))
     }
 
+    ///
+    /// Remove the path from the list of paths to search, this has no effect if the path
+    /// was not in the list.
+    ///
     pub fn remove(&mut self, path: &PathBuf) {
         self.paths.retain(|p| p != path);
     }
