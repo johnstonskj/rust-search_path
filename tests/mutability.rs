@@ -1,9 +1,14 @@
 use search_path::SearchPath;
 use std::path::PathBuf;
 
+#[cfg(target_family = "windows")]
+const SIMPLE_PATH: &str = "a;b;c";
+#[cfg(not(target_family = "windows"))]
+const SIMPLE_PATH: &str = "a:b:c";
+
 #[test]
 fn test_append() {
-    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", "a:b:c");
+    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", SIMPLE_PATH);
     assert!(!search_path.contains(&PathBuf::from("d")));
     search_path.append(PathBuf::from("d"));
     assert!(search_path.contains(&PathBuf::from("d")));
@@ -12,7 +17,7 @@ fn test_append() {
 
 #[test]
 fn test_append_cwd() {
-    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", "a:b:c");
+    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", SIMPLE_PATH);
     assert!(!search_path.contains(&PathBuf::from(".")));
     search_path.append_cwd();
     assert!(search_path.contains(&PathBuf::from(".")));
@@ -21,7 +26,7 @@ fn test_append_cwd() {
 
 #[test]
 fn test_prepend() {
-    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", "a:b:c");
+    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", SIMPLE_PATH);
     assert!(!search_path.contains(&PathBuf::from("d")));
     search_path.prepend(PathBuf::from("d"));
     assert!(search_path.contains(&PathBuf::from("d")));
@@ -30,7 +35,7 @@ fn test_prepend() {
 
 #[test]
 fn test_prepend_cwd() {
-    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", "a:b:c");
+    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", SIMPLE_PATH);
     assert!(!search_path.contains(&PathBuf::from(".")));
     search_path.prepend_cwd();
     assert!(search_path.contains(&PathBuf::from(".")));
@@ -39,7 +44,7 @@ fn test_prepend_cwd() {
 
 #[test]
 fn test_remove() {
-    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", "a:b:c");
+    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", SIMPLE_PATH);
     assert!(search_path.contains(&PathBuf::from("a")));
     search_path.remove(&PathBuf::from("a"));
     assert!(!search_path.contains(&PathBuf::from("a")));

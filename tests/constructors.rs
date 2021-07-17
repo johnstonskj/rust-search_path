@@ -1,6 +1,16 @@
 use search_path::SearchPath;
 use std::path::{Path, PathBuf};
 
+#[cfg(target_family = "windows")]
+const SIMPLE_PATH: &str = ".;..";
+#[cfg(not(target_family = "windows"))]
+const SIMPLE_PATH: &str = ".:..";
+
+#[cfg(target_family = "windows")]
+const NOT_SO_SIMPLE_PATH: &str = ";.;..;";
+#[cfg(not(target_family = "windows"))]
+const NOT_SO_SIMPLE_PATH: &str = ":.:..:";
+
 fn assert_correct(search_path: &SearchPath) {
     assert_eq!(search_path.len(), 2);
     assert!(search_path.contains(&PathBuf::from(".")));
@@ -19,7 +29,7 @@ fn test_no_env_var() {
 
 #[test]
 fn test_no_env_var_or() {
-    let search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", ".:..");
+    let search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", SIMPLE_PATH);
     assert_correct(&search_path);
 }
 
@@ -37,7 +47,7 @@ fn test_ignore_empty() {
 
 #[test]
 fn test_ignore_empty_split() {
-    let search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", ":.:..:");
+    let search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", NOT_SO_SIMPLE_PATH);
     assert_correct(&search_path);
 }
 
@@ -45,13 +55,13 @@ fn test_ignore_empty_split() {
 
 #[test]
 fn from_string() {
-    let search_path: SearchPath = String::from(".:..").into();
+    let search_path: SearchPath = String::from(SIMPLE_PATH).into();
     assert_correct(&search_path);
 }
 
 #[test]
 fn from_str() {
-    let search_path: SearchPath = ".:..".into();
+    let search_path: SearchPath = SIMPLE_PATH.into();
     assert_correct(&search_path);
 }
 

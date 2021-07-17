@@ -1,10 +1,20 @@
 use search_path::SearchPath;
 use std::path::PathBuf;
 
+#[cfg(target_family = "windows")]
+fn make_full_search_path() -> SearchPath {
+    String::from("tests;tests/a;tests/b;tests/c;tests/e/f;tests/e/f/g").into()
+}
+#[cfg(not(target_family = "windows"))]
 fn make_full_search_path() -> SearchPath {
     String::from("tests:tests/a:tests/b:tests/c:tests/e/f:tests/e/f/g").into()
 }
 
+#[cfg(target_family = "windows")]
+fn make_partial_search_path() -> SearchPath {
+    String::from("tests/a;tests/c;tests/e/f/g").into()
+}
+#[cfg(not(target_family = "windows"))]
 fn make_partial_search_path() -> SearchPath {
     String::from("tests/a:tests/c:tests/e/f/g").into()
 }
