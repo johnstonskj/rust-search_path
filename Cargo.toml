@@ -2,7 +2,7 @@
 name = "search_path"
 description = "Provides a very simple search path file finder."
 authors = ["Simon Johnston <johnstonskj@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 documentation = "https://docs.rs/search_path/"
 repository = "https://github.com/johnstonskj/rust-search_path.git"
