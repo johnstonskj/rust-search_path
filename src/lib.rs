@@ -1,12 +1,20 @@
 /*!
 Provides a very simple search path file finder.
 
-More detailed description, with
+The `SearchPath` type allows for the finding of files using a series of search directories. This is
+akin to the mechanism a shell uses to find executables using the `PATH` environment variable. It
+can be constructed with a search path from an environment variable, from a string, or from a list
+of either string or `Path`/`PathBuf` values. Typically the _find_ methods return the first
+matching file or directory, but the `find_all` method specifically collects and returns a list of
+all matching paths.
 
 # Constructors
 
 The `SearchPath` type also has `From<>` implementations for `PathBuf`, `Vec<PathBuf>`, `Vec<&Path>`,
-`Vec<&str>`, `String`, and `&str`.
+`Vec<&str>`, `String`, and `&str`. In the case of vector values, or a single `PathBuf`, each path
+value will be used as-is without trying to split it into components. In the case of individual
+`String` and `&str` values the value will be split using the platform specific path separator
+into individual paths components.
 
 # Example
 
@@ -257,14 +265,14 @@ impl SearchPath {
     }
 
     ///
-    /// Return the first file found in the search path, or `None`.
+    /// Return the first _file_ found in the search path, or `None`.
     ///
     pub fn find_file(&self, file_name: &Path) -> Option<PathBuf> {
         self.find_something(file_name, FindKind::File)
     }
 
     ///
-    /// Return the first directory found in the search path, or `None`.
+    /// Return the first _directory_ found in the search path, or `None`.
     ///
     pub fn find_directory(&self, file_name: &Path) -> Option<PathBuf> {
         self.find_something(file_name, FindKind::Directory)
