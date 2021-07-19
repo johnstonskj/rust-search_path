@@ -177,6 +177,15 @@ impl From<SearchPath> for Vec<PathBuf> {
     }
 }
 
+impl IntoIterator for SearchPath {
+    type Item = PathBuf;
+    type IntoIter = std::vec::IntoIter<PathBuf>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.paths.into_iter()
+    }
+}
+
 impl SearchPath {
     ///
     /// Construct a new search path by parsing the environment variable named `env_var` into
