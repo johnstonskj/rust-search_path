@@ -46,10 +46,13 @@ fn which_command(cmd_name: &str) -> Option<PathBuf> {
 
 ## Changes
 
-**Version 0.1.1**
+**Version 0.1.3**
+
+* Added implementation of IntoIterator to extract paths.
+
+**Version 0.1.2**
 
 * Added a dedup method.
-* Added implementation of IntoIterator to extract paths.
 
 **Version 0.1.1**
 
