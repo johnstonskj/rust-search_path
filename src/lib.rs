@@ -180,8 +180,8 @@ impl From<SearchPath> for Vec<PathBuf> {
 impl SearchPath {
     ///
     /// Construct a new search path by parsing the environment variable named `env_var` into
-    /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'` character
-    /// on other platforms.
+    /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'`
+    /// character on other platforms.
     ///
     /// If the environment variable is not present, or could not be read this function returns
     /// an error.
@@ -192,6 +192,9 @@ impl SearchPath {
     /// let search_path = SearchPath::new("CMD_PATH").expect("No $CMD_PATH present");
     /// ```
     ///
+    /// Constructors do not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
+    ///
     pub fn new(env_var: &str) -> Result<Self, Box<dyn Error>> {
         match env::var(env_var) {
             Ok(path) => Ok(Self::from(path)),
@@ -201,8 +204,8 @@ impl SearchPath {
 
     ///
     /// Construct a new search path by parsing the environment variable named `env_var` into
-    /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'` character
-    /// on other platforms.
+    /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'`
+    /// character on other platforms.
     ///
     /// If the environment variable is not present, or could not be read this function returns
     /// the default value provided instead. The default value may be any value that has an
@@ -214,6 +217,9 @@ impl SearchPath {
     /// let search_path = SearchPath::new_or("CMD_PATH", ".");
     /// ```
     ///
+    /// Constructors do not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
+    ///
     pub fn new_or<T: Into<SearchPath>>(env_var: &str, default: T) -> Self {
         match Self::new(env_var) {
             Ok(search_path) => search_path,
@@ -223,8 +229,8 @@ impl SearchPath {
 
     ///
     /// Construct a new search path by parsing the environment variable named `env_var` into
-    /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'` character
-    /// on other platforms.
+    /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'`
+    /// character on other platforms.
     ///
     /// If the environment variable is not present, or could not be read this function returns
     /// the value of `Default::default()` implemented for `SearchPath` instead.
@@ -234,6 +240,9 @@ impl SearchPath {
     ///
     /// let search_path = SearchPath::new_or_default("CMD_PATH");
     /// ```
+    ///
+    /// Constructors do not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
     ///
     pub fn new_or_default(env_var: &str) -> Self {
         Self::new_or(env_var, SearchPath::default())
@@ -347,6 +356,8 @@ impl SearchPath {
 
     ///
     /// Append the provided `path` to the list of paths to search.
+    /// This operation does not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
     ///
     pub fn append(&mut self, path: PathBuf) {
         self.paths.push(path)
@@ -354,6 +365,8 @@ impl SearchPath {
 
     ///
     /// Append the current directory path, `"."`, to the list of paths to search.
+    /// This operation does not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
     ///
     pub fn append_cwd(&mut self) {
         self.append(PathBuf::from(CURRENT_DIR_PATH))
@@ -361,6 +374,8 @@ impl SearchPath {
 
     ///
     /// Prepend the provided `path` to the list of paths to search.
+    /// This operation does not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
     ///
     pub fn prepend(&mut self, path: PathBuf) {
         self.paths.insert(0, path)
@@ -368,6 +383,8 @@ impl SearchPath {
 
     ///
     /// Prepend the current directory path, `"."`, to the list of paths to search.
+    /// This operation does not check for duplicate paths, to remove duplicates see the
+    /// [`dedup`](struct.SearchPath.html#method.dedup)) method.
     ///
     pub fn prepend_cwd(&mut self) {
         self.prepend(PathBuf::from(CURRENT_DIR_PATH))
@@ -379,5 +396,16 @@ impl SearchPath {
     ///
     pub fn remove(&mut self, path: &PathBuf) {
         self.paths.retain(|p| p != path);
+    }
+
+    ///
+    /// Ensure that only one copy of a path exists in the list of paths to search. This operation
+    /// will ensure the ordering of paths remains the same and keep the first duplicate it finds
+    /// and remove any subsequent ones.
+    ///
+    pub fn dedup(&mut self) {
+        use std::collections::HashSet;
+        let mut seen: HashSet<PathBuf> = Default::default();
+        self.paths.retain(|p| seen.insert(p.clone()))
     }
 }

@@ -49,3 +49,18 @@ fn test_remove() {
     search_path.remove(&PathBuf::from("a"));
     assert!(!search_path.contains(&PathBuf::from("a")));
 }
+
+#[cfg(target_family = "windows")]
+const DUPLICATES_PATH: &str = "a;b;a;b;c;a;c";
+#[cfg(not(target_family = "windows"))]
+const DUPLICATES_PATH: &str = "a:b:a:b:c:a:c";
+
+#[test]
+fn test_dedup() {
+    let mut search_path = SearchPath::new_or("UNLIKELY_THIS_VAR_EXISTS", DUPLICATES_PATH);
+    search_path.dedup();
+    assert_eq!(search_path.len(), 3);
+    assert!(search_path.contains(&PathBuf::from("a")));
+    assert!(search_path.contains(&PathBuf::from("b")));
+    assert!(search_path.contains(&PathBuf::from("c")));
+}

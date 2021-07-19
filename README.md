@@ -48,6 +48,10 @@ fn which_command(cmd_name: &str) -> Option<PathBuf> {
 
 **Version 0.1.1**
 
+* Added a dedup method.
+
+**Version 0.1.1**
+
 * Completed documentation.
 * Added Github builds.
 * Fixed bug in test cases for Windows builds.
