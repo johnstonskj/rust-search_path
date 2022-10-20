@@ -46,6 +46,10 @@ fn which_command(cmd_name: &str) -> Option<PathBuf> {
 
 ## Changes
 
+**Version 0.1.4**
+
+* Added new constructor `path` as a simple shortcut.
+
 **Version 0.1.3**
 
 * Added implementation of IntoIterator to extract paths.

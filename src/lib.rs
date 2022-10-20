@@ -212,6 +212,13 @@ impl SearchPath {
     }
 
     ///
+    /// Construct a new search path by parsing the environment variable named `PATH`.
+    ///
+    pub fn path() -> Result<Self, Box<dyn Error>> {
+        Self::new("PATH")
+    }
+
+    ///
     /// Construct a new search path by parsing the environment variable named `env_var` into
     /// separate paths. Paths are separated by the `';'` character on Windows, and the `':'`
     /// character on other platforms.
